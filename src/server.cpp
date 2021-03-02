@@ -29,6 +29,10 @@ void receive()
 			for (int i = 0; i < g_users.size(); i++)
 			{
 				std::shared_ptr<tcp::socket>& sock = g_users[i];
+				if (!sock->is_open())
+				{
+					continue;
+				}
 
 				size_t bytes = sock->available();
 

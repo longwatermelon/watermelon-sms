@@ -24,12 +24,14 @@ namespace userinfo
 }
 
 
-void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx)
+void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx, bool* running)
 {
 	SDL_Rect mrect = { 0, 0, 0, CHAR_HEIGHT };
 
 	while (true)
 	{
+		if (!(*running)) break;
+
 		sock->wait(sock->wait_read);
 
 		std::vector<char> buf(sock->available());
@@ -69,18 +71,6 @@ void send(tcp::socket* sock, const std::string& msg)
 }
 
 
-void input(tcp::socket* sock)
-{
-	while (true)
-	{
-		std::string msg;
-		std::getline(std::cin, msg);
-
-		send(sock, msg);
-	}
-}
-
-
 void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 {
 	if (b.button == SDL_BUTTON_LEFT)
@@ -108,15 +98,15 @@ int main(int argc, char* argv[])
 
 	sock.connect(tcp::endpoint(address::from_string("127.0.0.1"), 1234));
 	
+	bool running = true;
+
 	std::mutex mtx;
-	std::thread thr_recv(receive, &sock, &mtx, &gfx);
-	std::thread thr_inp(input, &sock);
+	std::thread thr_recv(receive, &sock, &mtx, &gfx, &running);
 
 
 	gfx.entries.push_back(std::make_shared<TextEntry>(SDL_Rect{ 0, 480, 500, 20 }));
 
-
-	bool running = true;
+	
 	SDL_Event evt;
 
 	while (running)
@@ -146,6 +136,7 @@ int main(int argc, char* argv[])
 						userinfo::selected_entry->clear_string(&gfx);
 					}
 				} break;
+				case SDL_SCANCODE_ESCAPE: running = false; break;
 				}
 			} break;
 			}
