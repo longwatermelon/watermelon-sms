@@ -28,33 +28,34 @@ void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx, bool* run
 {
 	SDL_Rect mrect = { 0, 0, 0, CHAR_HEIGHT };
 
-	while (true)
+	while (*running)
 	{
-		if (!(*running)) break;
-
-		sock->wait(sock->wait_read);
-
-		std::vector<char> buf(sock->available());
-		sock->read_some(asio::buffer(buf.data(), buf.size()));
-
-		std::string data;
-		for (char c : buf)
-			data += c;
-
-		mrect.w = data.size() * CHAR_WIDTH;
-
+		if (sock->available() > 0)
 		{
-			std::lock_guard lock(*mtx);
-			
-			gfx->messages.push_back(std::make_shared<Message>(mrect, data));
+			std::vector<char> buf(sock->available());
+			sock->read_some(asio::buffer(buf.data(), buf.size()));
 
-			gfx->messages[gfx->messages.size() - 1]->render(gfx->rend);
+			std::string data;
+			for (char c : buf)
+				data += c;
 
-			gfx->render_everything();
+			mrect.w = data.size() * CHAR_WIDTH;
+
+			{
+				std::lock_guard lock(*mtx);
+
+				gfx->messages.push_back(std::make_shared<Message>(mrect, data));
+
+				gfx->messages[gfx->messages.size() - 1]->render(gfx->rend);
+
+				gfx->render_everything();
+			}
+
+			if (mrect.y < SCROLLING_Y)
+				mrect.y += CHAR_HEIGHT;
 		}
 
-		if (mrect.y < SCROLLING_Y)
-			mrect.y += CHAR_HEIGHT;
+		SDL_Delay(10);
 	}
 }
 
@@ -105,7 +106,10 @@ int main(int argc, char* argv[])
 
 
 	gfx.entries.push_back(std::make_shared<TextEntry>(SDL_Rect{ 0, 480, 500, 20 }));
+	for (auto& e : gfx.entries)
+		e->render(&gfx);
 
+	SDL_RenderPresent(gfx.rend);
 	
 	SDL_Event evt;
 
@@ -151,8 +155,10 @@ int main(int argc, char* argv[])
 	sock.close();
 	gfx.cleanup();
 
-	SDL_Quit();
-	TTF_Quit();
+	if (thr_recv.joinable())
+	{
+		thr_recv.join();
+	}
 
 	return 0;
 }

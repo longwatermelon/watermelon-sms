@@ -2,6 +2,17 @@
 #include "../include/graphics.h"
 
 
+void TextEntry::render(GraphicsHandler* gfx)
+{
+	SDL_SetRenderDrawColor(gfx->rend, 0, 0, 255, 255);
+
+	SDL_RenderFillRect(gfx->rend, &rect);
+	SDL_RenderPresent(gfx->rend);
+
+	SDL_SetRenderDrawColor(gfx->rend, 0, 0, 0, 255);
+}
+
+
 bool TextEntry::check_clicked(int cx, int cy)
 {
 	return ((cx > rect.x && cx < rect.x + rect.w) && (cy > rect.y && cy < rect.y + rect.h));

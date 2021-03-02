@@ -45,6 +45,11 @@ void GraphicsHandler::render_everything()
 		m->render(rend);
 	}
 
+	for (auto& e : entries)
+	{
+		e->render(this);
+	}
+
 	SDL_RenderPresent(rend);
 }
 

@@ -15,9 +15,11 @@ public:
 
 	~TextEntry()
 	{
-		SDL_FreeSurface(surf);
-		SDL_DestroyTexture(msg_tex);
+		if (surf) SDL_FreeSurface(surf);
+		if (msg_tex) SDL_DestroyTexture(msg_tex);
 	}
+
+	void render(GraphicsHandler* gfx);
 
 	bool check_clicked(int cx, int cy);
 
@@ -33,6 +35,6 @@ private:
 	std::string contents;
 	TTF_Font* sans = OPEN_FONT_SANS;
 
-	SDL_Surface* surf;
-	SDL_Texture* msg_tex;
+	SDL_Surface* surf{ nullptr };
+	SDL_Texture* msg_tex{ nullptr };
 };
