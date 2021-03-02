@@ -35,7 +35,7 @@ void GraphicsHandler::mainloop()
 	}
 
 	int end = -1;
-	for (int i = 0; i < messages.size(); i++)
+	for (int i = messages.size() - 1; i > 0; i--)
 	{
 		if (messages[i]->scheduled_destruction())
 		{

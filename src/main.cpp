@@ -39,6 +39,8 @@ void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx, bool* run
 			for (char c : buf)
 				data += c;
 
+			data += std::to_string(gfx->messages.size());
+
 			mrect.w = data.size() * CHAR_WIDTH;
 
 			{
@@ -64,7 +66,6 @@ void send(tcp::socket* sock, const std::string& msg)
 {
 	if (msg.size() >= 100)
 	{
-		std::cout << "messages over 100 characters are invalid\n";
 		return;
 	}
 
