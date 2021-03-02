@@ -10,6 +10,8 @@ class GraphicsHandler;
 class Text
 {
 public:
+	Text() = default;
+
 	Text(const SDL_Rect& r, const std::string& text)
 		: rect(r), contents(text)
 	{

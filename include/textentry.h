@@ -12,7 +12,10 @@ class TextEntry
 {
 public:
 	TextEntry(const SDL_Rect& r)
-		: rect(r) {}
+		: rect(r)
+	{
+		t = Text(r, "");
+	}
 
 	~TextEntry()
 	{
@@ -27,14 +30,13 @@ public:
 	void recv_char(GraphicsHandler* gfx, char c);
 	void draw_char(GraphicsHandler* gfx, char c);
 
-	std::string str() { return contents; }
+	std::string str() { return t.get_contents(); }
 
 	void clear_string(GraphicsHandler* gfx);
 
 private:
 	SDL_Rect rect;
-	std::string contents;
-	TTF_Font* sans = OPEN_FONT_SANS;
+	Text t;
 
 	SDL_Surface* surf{ nullptr };
 	SDL_Texture* msg_tex{ nullptr };

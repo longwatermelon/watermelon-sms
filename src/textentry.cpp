@@ -16,10 +16,10 @@ void TextEntry::render(GraphicsHandler* gfx)
 	if (focused) { SDL_SetRenderDrawColor(gfx->rend, 0, 200, 200, 255); SDL_RenderDrawRect(gfx->rend, &rect); }
 	
 
-	SDL_Surface* stemp = TTF_RenderText_Solid(sans, contents.c_str(), { 255, 255, 255 });
+	SDL_Surface* stemp = TTF_RenderText_Solid(t.get_font(), t.get_contents().c_str(), { 255, 255, 255 });
 	SDL_Texture* ttemp = SDL_CreateTextureFromSurface(gfx->rend, stemp);
 
-	SDL_Rect rtemp = { rect.x + CHAR_WIDTH, rect.y, contents.size() * CHAR_WIDTH, CHAR_HEIGHT };
+	SDL_Rect rtemp = { rect.x + CHAR_WIDTH, rect.y, t.get_contents().size() * CHAR_WIDTH, CHAR_HEIGHT };
 	SDL_RenderCopy(gfx->rend, ttemp, 0, &rtemp);
 
 	SDL_RenderPresent(gfx->rend);
@@ -44,13 +44,16 @@ bool TextEntry::check_clicked(int cx, int cy)
 
 void TextEntry::recv_char(GraphicsHandler* gfx, char c)
 {
-	contents += c;
+	t.set_contents(t.get_contents() + c);
 	draw_char(gfx, c);
 }
 
 
 void TextEntry::draw_char(GraphicsHandler* gfx, char c)
 {
+	std::string contents = t.get_contents();
+	TTF_Font* sans = t.get_font();
+
 	char arr[] = { contents[contents.size() - 1], 0 };
 	surf = TTF_RenderText_Solid(sans, arr, { 255, 255, 255 });
 	msg_tex = SDL_CreateTextureFromSurface(gfx->rend, surf);
@@ -63,8 +66,8 @@ void TextEntry::draw_char(GraphicsHandler* gfx, char c)
 
 void TextEntry::clear_string(GraphicsHandler* gfx)
 {
-	contents = "";
-	surf = TTF_RenderText_Solid(sans, contents.c_str(), { 255, 255, 255 });
+	t.set_contents("");
+	surf = TTF_RenderText_Solid(t.get_font(), t.get_contents().c_str(), { 255, 255, 255 });
 	msg_tex = SDL_CreateTextureFromSurface(gfx->rend, surf);
 
 	SDL_Rect rtemp = { rect.x, rect.y, CHAR_WIDTH, CHAR_HEIGHT };
