@@ -20,6 +20,7 @@ public:
 	void move(int x, int y);
 
 	bool can_scroll() { return rect.y >= SCROLLING_Y; }
+	bool scheduled_destruction() { return rect.y < 0; }
 
 	std::string get_contents() { return text.get_contents(); }
 

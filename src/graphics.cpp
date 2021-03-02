@@ -33,6 +33,19 @@ void GraphicsHandler::mainloop()
 			break;
 		}
 	}
+
+	int end = -1;
+	for (int i = 0; i < messages.size(); i++)
+	{
+		if (messages[i]->scheduled_destruction())
+		{
+			end = i;
+			break;
+		}
+	}
+
+	if (end != -1)
+		messages.erase(messages.begin(), messages.begin() + end);
 }
 
 
