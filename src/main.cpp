@@ -39,8 +39,6 @@ void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx, bool* run
 			for (char c : buf)
 				data += c;
 
-			data += std::to_string(gfx->messages.size());
-
 			mrect.w = data.size() * CHAR_WIDTH;
 
 			{
