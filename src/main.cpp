@@ -1,4 +1,5 @@
 #include "../include/constants.h"
+#include "../include/textentry.h"
 #include "../include/graphics.h"
 #include <iostream>
 #include <thread>
@@ -15,6 +16,12 @@
 #include <SDL_ttf.h>
 
 using namespace asio::ip;
+
+
+namespace userinfo
+{
+	std::shared_ptr<TextEntry> selected_entry;
+}
 
 
 void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx)
@@ -74,6 +81,24 @@ void input(tcp::socket* sock)
 }
 
 
+void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
+{
+	if (b.button == SDL_BUTTON_LEFT)
+	{
+		for (auto& e : gfx.entries)
+		{
+			int cx, cy;
+			SDL_GetMouseState(&cx, &cy);
+
+			if (e->check_clicked(cx, cy))
+			{
+				userinfo::selected_entry = e;
+			}
+		}
+	}
+}
+
+
 int main(int argc, char* argv[])
 {
 	GraphicsHandler gfx;
@@ -87,6 +112,10 @@ int main(int argc, char* argv[])
 	std::thread thr_recv(receive, &sock, &mtx, &gfx);
 	std::thread thr_inp(input, &sock);
 
+
+	gfx.entries.push_back(std::make_shared<TextEntry>(SDL_Rect{ 0, 480, 500, 20 }));
+
+
 	bool running = true;
 	SDL_Event evt;
 
@@ -97,6 +126,28 @@ int main(int argc, char* argv[])
 			switch (evt.type)
 			{
 			case SDL_QUIT: running = false; break;
+			case SDL_MOUSEBUTTONDOWN: mousepress(gfx, evt.button); break;
+
+			case SDL_TEXTINPUT: {
+				if (userinfo::selected_entry)
+				{
+					userinfo::selected_entry->recv_char(&gfx, evt.text.text[0]);
+				}
+			} break;
+
+			case SDL_KEYDOWN: {
+				switch (evt.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_RETURN: {
+					if (userinfo::selected_entry)
+					{
+						std::lock_guard lock(mtx);
+						send(&sock, userinfo::selected_entry->str());
+						userinfo::selected_entry->clear_string(&gfx);
+					}
+				} break;
+				}
+			} break;
 			}
 		}
 
@@ -106,6 +157,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	sock.close();
 	gfx.cleanup();
 
 	SDL_Quit();

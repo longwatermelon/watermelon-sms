@@ -11,7 +11,7 @@ public:
 	Message(const SDL_Rect& r, const std::string& msg)
 		: rect(r), contents(msg), font(font)
 	{
-		font = TTF_OpenFont("OpenSans-Italic.ttf", 24);
+		font = OPEN_FONT_SANS;
 	}
 
 	void render(SDL_Renderer* rend, const SDL_Color& col = { 255, 255, 255 });
