@@ -37,4 +37,6 @@ private:
 
 	SDL_Surface* surf{ nullptr };
 	SDL_Texture* msg_tex{ nullptr };
+
+	bool focused = false;
 };

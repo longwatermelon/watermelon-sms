@@ -76,6 +76,8 @@ void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 {
 	if (b.button == SDL_BUTTON_LEFT)
 	{
+		bool focused = false;
+
 		for (auto& e : gfx.entries)
 		{
 			int cx, cy;
@@ -84,8 +86,13 @@ void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 			if (e->check_clicked(cx, cy))
 			{
 				userinfo::selected_entry = e;
+				focused = true;
 			}
 		}
+
+		if (!focused) userinfo::selected_entry = nullptr;
+
+		gfx.render_everything();
 	}
 }
 

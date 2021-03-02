@@ -4,10 +4,28 @@
 
 void TextEntry::render(GraphicsHandler* gfx)
 {
-	SDL_SetRenderDrawColor(gfx->rend, 0, 0, 255, 255);
+	if (focused)
+	{
+		SDL_SetRenderDrawColor(gfx->rend, 180, 180, 180, 255);
+	}
+	else
+		SDL_SetRenderDrawColor(gfx->rend, 80, 80, 80, 255);
 
 	SDL_RenderFillRect(gfx->rend, &rect);
+
+	if (focused) { SDL_SetRenderDrawColor(gfx->rend, 0, 200, 200, 255); SDL_RenderDrawRect(gfx->rend, &rect); }
+	
+
+	SDL_Surface* stemp = TTF_RenderText_Solid(sans, contents.c_str(), { 255, 255, 255 });
+	SDL_Texture* ttemp = SDL_CreateTextureFromSurface(gfx->rend, stemp);
+
+	SDL_Rect rtemp = { rect.x + CHAR_WIDTH, rect.y, contents.size() * CHAR_WIDTH, CHAR_HEIGHT };
+	SDL_RenderCopy(gfx->rend, ttemp, 0, &rtemp);
+
 	SDL_RenderPresent(gfx->rend);
+
+	SDL_FreeSurface(stemp);
+	SDL_DestroyTexture(ttemp);
 
 	SDL_SetRenderDrawColor(gfx->rend, 0, 0, 0, 255);
 }
@@ -15,7 +33,12 @@ void TextEntry::render(GraphicsHandler* gfx)
 
 bool TextEntry::check_clicked(int cx, int cy)
 {
-	return ((cx > rect.x && cx < rect.x + rect.w) && (cy > rect.y && cy < rect.y + rect.h));
+	bool cond = ((cx > rect.x && cx < rect.x + rect.w) && (cy > rect.y && cy < rect.y + rect.h));
+
+	if (cond) focused = true;
+	else focused = false;
+
+	return cond;
 }
 
 
