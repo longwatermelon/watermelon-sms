@@ -77,12 +77,11 @@ void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 	if (b.button == SDL_BUTTON_LEFT)
 	{
 		bool focused = false;
+		int cx, cy;
+		SDL_GetMouseState(&cx, &cy);
 
 		for (auto& e : gfx.entries)
 		{
-			int cx, cy;
-			SDL_GetMouseState(&cx, &cy);
-
 			if (e->check_clicked(cx, cy))
 			{
 				userinfo::selected_entry = e;
@@ -92,8 +91,22 @@ void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 
 		if (!focused) userinfo::selected_entry = nullptr;
 
+		for (auto& b : gfx.buttons)
+		{
+			if (b->check_clicked(cx, cy))
+			{
+				b->call_function();
+			}
+		}
+
 		gfx.render_everything();
 	}
+}
+
+
+void foo()
+{
+	std::cout << "your mom lMMMMMMMMMMMMMMMMM\n";
 }
 
 
@@ -115,6 +128,12 @@ int main(int argc, char* argv[])
 	gfx.entries.push_back(std::make_shared<TextEntry>(SDL_Rect{ 0, 480, 500, 20 }));
 	for (auto& e : gfx.entries)
 		e->render(&gfx);
+
+	gfx.buttons.push_back(std::make_shared<Button>(SDL_Rect{ 250, 100, 50, 50 }, "a"));
+	std::function<void()> test = foo;
+	gfx.buttons[gfx.buttons.size() - 1]->bind_function(&test);
+	for (auto& b : gfx.buttons)
+		b->render(&gfx);
 
 	SDL_RenderPresent(gfx.rend);
 	

@@ -1,6 +1,7 @@
 #pragma once
 #include "message.h"
 #include "textentry.h"
+#include "button.h"
 #include <vector>
 #include <memory>
 #include <SDL.h>
@@ -18,6 +19,7 @@ public:
 
 	std::vector<std::shared_ptr<Message>> messages;
 	std::vector<std::shared_ptr<TextEntry>> entries;
+	std::vector<std::shared_ptr<Button>> buttons;
 
 	GraphicsHandler(int w = 500, int h = 500);
 

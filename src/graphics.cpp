@@ -41,14 +41,13 @@ void GraphicsHandler::render_everything()
 	SDL_RenderClear(rend);
 
 	for (auto& m : messages)
-	{
 		m->render(rend);
-	}
 
 	for (auto& e : entries)
-	{
 		e->render(this);
-	}
+
+	for (auto& b : buttons)
+		b->render(this);
 
 	SDL_RenderPresent(rend);
 }
