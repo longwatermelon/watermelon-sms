@@ -1,5 +1,6 @@
 #pragma once
 #include "constants.h"
+#include "text.h"
 #include <string>
 #include <functional>
 #include <SDL.h>
@@ -11,8 +12,8 @@ class GraphicsHandler;
 class Button
 {
 public:
-	Button(const SDL_Rect& r, std::string text, const SDL_Color& col = { 100, 100, 100 })
-		: rect(r), text(text) {}
+	Button(const SDL_Rect& r, const Text& text, const SDL_Color& col = { 100, 100, 100 })
+		: rect(r), t(text) {}
 
 	void render(GraphicsHandler* gfx);
 
@@ -24,8 +25,7 @@ public:
 
 private:
 	SDL_Rect rect;
-	TTF_Font* font = OPEN_FONT_SANS;
-	std::string text;
+	Text t;
 
 	std::function<void()> func;
 
