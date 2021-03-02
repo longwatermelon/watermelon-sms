@@ -1,5 +1,6 @@
 #pragma once
 #include "constants.h"
+#include "text.h"
 #include <string>
 #include <SDL.h>
 #include <SDL_ttf.h>

@@ -44,7 +44,7 @@ void receive(tcp::socket* sock, std::mutex* mtx, GraphicsHandler* gfx, bool* run
 			{
 				std::lock_guard lock(*mtx);
 
-				gfx->messages.push_back(std::make_shared<Message>(mrect, data));
+				gfx->messages.push_back(std::make_shared<Message>(mrect, Text(mrect, data)));
 
 				gfx->messages[gfx->messages.size() - 1]->render(gfx->rend);
 
@@ -104,12 +104,6 @@ void mousepress(GraphicsHandler& gfx, SDL_MouseButtonEvent& b)
 }
 
 
-void foo()
-{
-	std::cout << "your mom lMMMMMMMMMMMMMMMMM\n";
-}
-
-
 int main(int argc, char* argv[])
 {
 	GraphicsHandler gfx;
@@ -128,12 +122,6 @@ int main(int argc, char* argv[])
 	gfx.entries.push_back(std::make_shared<TextEntry>(SDL_Rect{ 0, 480, 500, 20 }));
 	for (auto& e : gfx.entries)
 		e->render(&gfx);
-
-	gfx.buttons.push_back(std::make_shared<Button>(SDL_Rect{ 250, 100, 50, 50 }, "a"));
-	std::function<void()> test = foo;
-	gfx.buttons[gfx.buttons.size() - 1]->bind_function(&test);
-	for (auto& b : gfx.buttons)
-		b->render(&gfx);
 
 	SDL_RenderPresent(gfx.rend);
 	

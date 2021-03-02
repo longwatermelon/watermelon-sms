@@ -1,5 +1,6 @@
 #pragma once
 #include "constants.h"
+#include "text.h"
 #include <string>
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -8,8 +9,8 @@
 class Message
 {
 public:
-	Message(const SDL_Rect& r, const std::string& msg)
-		: rect(r), contents(msg), font(font)
+	Message(const SDL_Rect& r, const Text& t)
+		: rect(r), text(t), font(font)
 	{
 		font = OPEN_FONT_SANS;
 	}
@@ -20,10 +21,10 @@ public:
 
 	bool can_scroll() { return rect.y >= SCROLLING_Y; }
 
-	std::string get_contents() { return contents; }
+	std::string get_contents() { return text.get_contents(); }
 
 private:
-	std::string contents;
+	Text text;
 	SDL_Rect rect;
 	TTF_Font* font;
 };
